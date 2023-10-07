@@ -1,0 +1,29 @@
+CREATE DATABASE IF NOT EXISTS synonyms;
+USE synonyms;
+CREATE TABLE word (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    chars TEXT NOT NULL
+);
+CREATE TABLE synonym (
+   id INTEGER PRIMARY KEY AUTO_INCREMENT,
+   word_id1 INTEGER NOT NULL,
+   word_id2 INTEGER NOT NULL,
+   FOREIGN KEY (word_id1) REFERENCES word (id),
+   FOREIGN KEY (word_id2) REFERENCES word (id)
+);
+INSERT INTO word (chars) VALUES
+('stora'),
+('diger'),
+('enorm'),
+('fet'),
+('grov'),
+('liten'),
+('oansenlig');
+INSERT INTO synonym (word_id1, word_id2)
+SELECT w1.id, w2.id
+FROM word w1, word w2
+WHERE w1.chars = 'stor' AND w2.chars = 'diger';
+INSERT INTO synonym (word_id1, word_id2)
+SELECT w1.id, w2.id
+FROM word w1, word w2
+WHERE w1.chars = 'diger' AND w2.chars = 'enorm';

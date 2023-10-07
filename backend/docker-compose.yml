@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  web-server:
+    depends_on:
+    - database
+    restart: always
+    build:
+      context: .
+      args:
+      - PORT=${EXPRESS_PORT}
+    environment:
+    - EXPRESS_PORT=${EXPRESS_PORT}
+    - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
+    - MYSQL_USER=${MYSQL_USER}
+    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_HOST_NAME=database
+    - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+    - ${EXPRESS_PORT}:3000
+    volumes:
+    - ./src/server.js:/usr/src/app/server.js
+  database:
+    image: mysql:8.1.0
+    environment:
+    - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
+    - MYSQL_USER=${MYSQL_USER}
+    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_DATABASE=synonyms
+    - MYSQL_RANDOM_ROOT_PASSWORD=y
+    expose:
+    - ${MYSQL_TCP_PORT}
+    volumes:
+    - ${PWD}/init.sql:/docker-entrypoint-initdb.d/init.sql
+    - db:/var/lib/mysql
+volumes:
+ db:
