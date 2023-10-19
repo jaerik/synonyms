@@ -12,7 +12,7 @@ CREATE TABLE synonym (
    FOREIGN KEY (word_id2) REFERENCES word (id)
 );
 INSERT INTO word (chars) VALUES
-('stora'),
+('stor'),
 ('diger'),
 ('enorm'),
 ('fet'),

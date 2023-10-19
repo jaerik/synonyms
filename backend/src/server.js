@@ -1,7 +1,11 @@
 'use strict';
 
+const basicAuth = require('express-basic-auth');
 const express = require('express');
+const fs = require("fs");
+const https = require('https');
 const mysql = require('mysql2');
+const path = require('path');
 
 const PORT = process.env.EXPRESS_PORT;
 
@@ -22,11 +26,24 @@ db.connect(function(err) {
 
 const app = express();
 
+app.use(basicAuth({
+  users: { 'erikja': 'abcd' },
+  challenge: true,
+  realm: 'Imb4T3st4pp',
+}));
+
+const httpsServer = https.createServer({
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+}, app);
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', (req, res) => {
-  res.send('Hello World');
+  res.sendFile('index.html', { root: 'public' });
 });
 
-app.listen(PORT, () => {
+httpsServer.listen(PORT, () => {
   console.log(`Web server running on port ${PORT}`);
 });
 
