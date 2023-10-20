@@ -4,19 +4,25 @@ services:
     depends_on:
     - database
     restart: always
+    image: erikja/synonyms-server
     build:
       target: server-prod
       args:
-      - PORT=${EXPRESS_PORT}
+      - PORT=${SERVER_PORT}
     environment:
-    - EXPRESS_PORT=${EXPRESS_PORT}
+    - EXPRESS_PORT=${SERVER_PORT}
     - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
     - MYSQL_USER=${MYSQL_USER}
-    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     - MYSQL_HOST_NAME=database
     - MYSQL_DATABASE=${MYSQL_DATABASE}
+    - SERVER_USER=${SERVER_USER}
+    - SERVER_PASSWORD_FILE=/run/secrets/server_password
     ports:
-    - 3000:${EXPRESS_PORT}
+    - 8443:${SERVER_PORT}
+    secrets:
+    - db_password
+    - server_password
     volumes:
     - ./backend/src/server.js:/usr/src/app/server.js
   database:
@@ -24,13 +30,20 @@ services:
     environment:
     - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
     - MYSQL_USER=${MYSQL_USER}
-    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     - MYSQL_DATABASE=synonyms
     - MYSQL_RANDOM_ROOT_PASSWORD=y
     expose:
     - ${MYSQL_TCP_PORT}
+    secrets:
+    - db_password
     volumes:
     - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     - db:/var/lib/mysql
 volumes:
  db:
+secrets:
+  db_password:
+    file: ./db_password
+  server_password:
+    file: ./server_password

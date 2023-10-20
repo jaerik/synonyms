@@ -37,5 +37,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://web-server:3000/"
+  "proxy": "https://web-server:3000/"
 }

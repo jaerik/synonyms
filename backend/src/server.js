@@ -12,7 +12,7 @@ const PORT = process.env.EXPRESS_PORT;
 const db = mysql.createConnection({
   host: process.env.MYSQL_HOST_NAME,
   user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
+  password: fs.readFileSync(process.env.MYSQL_PASSWORD_FILE, 'utf8').trim(),
   port: process.env.MYSQL_PORT,
   database: process.env.MYSQL_DATABASE
 });
@@ -27,7 +27,7 @@ db.connect(function(err) {
 const app = express();
 
 app.use(basicAuth({
-  users: { 'erikja': 'abcd' },
+  users: { [process.env.SERVER_USER]: fs.readFileSync(process.env.SERVER_PASSWORD_FILE, 'utf8').trim() },
   challenge: true,
   realm: 'Imb4T3st4pp',
 }));

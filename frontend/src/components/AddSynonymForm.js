@@ -12,8 +12,10 @@ function AddSynonymForm({word, synonyms, setSynonyms, setMissingWord, setShowAdd
     const handleSubmit = async event => {
       event.preventDefault();
       if (await HasWord(synonym)) {
-        await SetData('add-synonym', [word, synonym]);
-        setSynonyms(await GetSynonyms(word));
+        if (!synonyms.includes(synonym)) {
+          await SetData('add-synonym', [word, synonym]);
+          setSynonyms(await GetSynonyms(word));
+        }
         setShowAddSynonymButton(true)
       } else {
         setMissingWord(synonym);
