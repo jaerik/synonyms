@@ -5,7 +5,6 @@ function AddSynonymForm({word, synonyms, setSynonyms, setMissingWord, setShowAdd
     const [synonym, setSynonym] = useState('');
 
     const handleChange = (event) => {
-      console.log('handleChange');
       setSynonym(event.target.value);
     };
 

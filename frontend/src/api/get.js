@@ -5,7 +5,6 @@ const apiURL = "api";
 async function GetResponse(apiName, params=[]) {
     const apiInput = params.join('/');
     const response = await axios.get(`${apiURL}/${apiName}/${apiInput}`);
-    console.log("response:" + JSON.stringify(response));
     return response;
 }
 

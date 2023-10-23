@@ -2,12 +2,12 @@
 
 const basicAuth = require('express-basic-auth');
 const express = require('express');
-const fs = require("fs");
+const fs = require('fs');
 const https = require('https');
 const mysql = require('mysql2');
 const path = require('path');
 
-const PORT = process.env.EXPRESS_PORT;
+const PORT = process.env.SERVER_PORT;
 
 const db = mysql.createConnection({
   host: process.env.MYSQL_HOST_NAME,
@@ -65,7 +65,6 @@ app.get("/api/add-word/:word", (req, res) => {
     if (err) {
       throw err;
     }
-    console.log("results:" + JSON.stringify(results));
     res.send({'id': results.insertId});
   });
 });
@@ -96,7 +95,6 @@ app.get("/api/add-synonym/:word1/:word2", (req, res) => {
 });
 
 app.get("/api/get-synonyms/:word", (req, res) => {
-  console.log(req.params.word);
   let query = `WITH RECURSIVE syn_rec(w_id1, w_id2, level) AS (
                  SELECT word_id2, word_id1, 1
                  FROM synonym
