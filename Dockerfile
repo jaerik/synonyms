@@ -1,10 +1,14 @@
 ARG EXPORT_DIR=/export
 
 FROM node:20-alpine3.18 AS client-src
+ARG SERVER_HOST_NAME=web-server
+ARG SERVER_PORT=443
 WORKDIR /usr/src/app
 COPY frontend/package.json ./
 RUN npm install
 COPY frontend/. .
+RUN sed -i -e "s/{{ SERVER_HOST_NAME }}/$SERVER_HOST_NAME/g" \
+           -e "s/{{ SERVER_PORT }}/$SERVER_PORT/g" package.json
 
 FROM client-src AS client-dev
 ARG DEV_PORT=3000

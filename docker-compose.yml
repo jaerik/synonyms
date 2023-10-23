@@ -10,7 +10,7 @@ services:
       args:
       - PORT=${SERVER_PORT}
     environment:
-    - EXPRESS_PORT=${SERVER_PORT}
+    - SERVER_PORT=${SERVER_PORT}
     - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
     - MYSQL_USER=${MYSQL_USER}
     - MYSQL_PASSWORD_FILE=/run/secrets/db_password
@@ -23,8 +23,6 @@ services:
     secrets:
     - db_password
     - server_password
-    volumes:
-    - ./backend/src/server.js:/usr/src/app/server.js
   database:
     image: mysql:8.1.0
     environment:

@@ -6,11 +6,14 @@ services:
     restart: always
     build:
       target: client-dev
+      args:
+      - SERVER_HOST_NAME=web-server
+      - SERVER_PORT=${SERVER_PORT}
     environment:
     - BACKEND_API=web-server:${SERVER_PORT}/api
     - WDS_SOCKET_PORT=8080
     ports:
-    - 8080:3000
+    - 3000:3000
     volumes:
     - ./frontend/src:/usr/src/app/src
   web-server:
