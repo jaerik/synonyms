@@ -9,20 +9,36 @@ const path = require('path');
 
 const PORT = process.env.SERVER_PORT;
 
-const db = mysql.createConnection({
+const dbConfig = {
   host: process.env.MYSQL_HOST_NAME,
   user: process.env.MYSQL_USER,
   password: fs.readFileSync(process.env.MYSQL_PASSWORD_FILE, 'utf8').trim(),
-  port: process.env.MYSQL_PORT,
+  port: process.env.MYSQL_TCP_PORT,
   database: process.env.MYSQL_DATABASE
-});
+};
 
-db.connect(function(err) {
-  if (err) {
-    throw err;
-  }
-  console.log("db connected");
-});
+var dbConnection;
+
+function connectToDb() {
+  dbConnection = mysql.createConnection(dbConfig);
+
+  dbConnection.connect(function(err) {
+    if (err) {
+      console.log('Unable to connect to database', err);
+      setTimeout(connectToDb, 2000);
+    }
+    console.log("Connection to database established");
+  });
+
+  dbConnection.on('error', function(err) {
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+      console.log("Connection to database lost", err);
+      connectToDb();
+    }
+  });
+}
+
+connectToDb();
 
 const app = express();
 
@@ -50,7 +66,7 @@ httpsServer.listen(PORT, () => {
 app.get("/api/get-words", (req, res) => {
   let query = `SELECT *
                FROM word`;
-  db.query(query, (err, results) => {
+  dbConnection.query(query, (err, results) => {
     if (err) {
       throw err;
     }
@@ -61,7 +77,7 @@ app.get("/api/get-words", (req, res) => {
 app.get("/api/add-word/:word", (req, res) => {
   let query = `INSERT INTO word (chars)
                VALUES ('${req.params.word}')`;
-  db.query(query, (err, results) => {
+  dbConnection.query(query, (err, results) => {
     if (err) {
       throw err;
     }
@@ -73,7 +89,7 @@ app.get("/api/get-word/:word", (req, res) => {
   let query = `SELECT w.id
                FROM word w
                WHERE w.chars = '${req.params.word}'`
-  db.query(query, (err, results) => {
+  dbConnection.query(query, (err, results) => {
     if (err) {
       throw err;
     }
@@ -86,7 +102,7 @@ app.get("/api/add-synonym/:word1/:word2", (req, res) => {
                SELECT w1.id, w2.id
                FROM word w1, word w2
                WHERE w1.chars = '${req.params.word1}' AND w2.chars = '${req.params.word2}'`;
-  db.query(query, (err, results) => {
+  dbConnection.query(query, (err, results) => {
     if (err) {
       throw err;
     }
@@ -120,7 +136,7 @@ app.get("/api/get-synonyms/:word", (req, res) => {
                FROM syn_rec
                JOIN word
                ON syn_rec.w_id2 = word.id`;
-  db.query(query, (err, results) => {
+  dbConnection.query(query, (err, results) => {
     if (err) {
       throw err;
     }
