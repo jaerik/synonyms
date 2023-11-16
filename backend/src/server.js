@@ -14,31 +14,17 @@ const dbConfig = {
   user: process.env.MYSQL_USER,
   password: fs.readFileSync(process.env.MYSQL_PASSWORD_FILE, 'utf8').trim(),
   port: process.env.MYSQL_TCP_PORT,
-  database: process.env.MYSQL_DATABASE
+  database: process.env.MYSQL_DATABASE,
+  waitForConnections: true,
+  connectionLimit: 10,
+  maxIdle: 10,
+  idleTimeout: 60000,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 };
 
-var dbConnection;
-
-function connectToDb() {
-  dbConnection = mysql.createConnection(dbConfig);
-
-  dbConnection.connect(function(err) {
-    if (err) {
-      console.log('Unable to connect to database', err);
-      setTimeout(connectToDb, 2000);
-    }
-    console.log("Connection to database established");
-  });
-
-  dbConnection.on('error', function(err) {
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
-      console.log("Connection to database lost", err);
-      connectToDb();
-    }
-  });
-}
-
-connectToDb();
+const dbConnection = mysql.createPool(dbConfig);
 
 const app = express();
 

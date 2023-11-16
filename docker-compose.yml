@@ -4,7 +4,7 @@ services:
     depends_on:
     - database
     restart: always
-    image: erikja/synonyms-server
+    image: erikja/synonyms-server:0.1.1
     build:
       target: server-prod
       args:
