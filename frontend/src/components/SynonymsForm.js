@@ -12,6 +12,7 @@ function SynonymForm() {
 
   const handleChange = (event) => {
     setShowSynonyms(false);
+    setSynonyms([]);
     setWord(event.target.value);
   };
 
@@ -34,9 +35,9 @@ function SynonymForm() {
                 <input type="text" value={word} placeholder="word" autofocus="autofocus" onChange={handleChange} />
               </label>
           </form>
-          <AddWordPopup open={showAddWord} setOpen={setShowAddWord} missingWord={missingWord}/>
+          <AddWordPopup open={showAddWord} setOpen={setShowAddWord} missingWord={missingWord} setShowSynonyms={setShowSynonyms}/>
         </div>
-        { showSynonyms ? <SynonymList word={word} synonyms={synonyms} setSynonyms={setSynonyms} setShowAddWord={setShowAddWord} setMissingWord={setMissingWord}/> : null }
+        { showSynonyms && <SynonymList word={word} synonyms={synonyms} setSynonyms={setSynonyms} setShowAddWord={setShowAddWord} setMissingWord={setMissingWord}/> }
       </div>
   );
 }

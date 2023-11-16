@@ -2,9 +2,10 @@ import React from 'react';
 import Popup from 'reactjs-popup';
 import {SetData} from '../api/get';
 
-function AddWordPopup({open, setOpen, missingWord}) {
+function AddWordPopup({open, setOpen, missingWord, setShowSynonyms}) {
     const handleClick = async event => {
         SetData('add-word', [missingWord]);
+        setShowSynonyms(true);
         setOpen(false);
     };
 
