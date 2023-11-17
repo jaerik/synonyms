@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cloud-curl
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/edge
+            operator: DoesNotExist
+  containers:
+  - name: curl
+    image: erikja/test_client
+    imagePullPolicy: IfNotPresent

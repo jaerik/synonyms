@@ -1,0 +1,6 @@
+---
+apiVersion: v2
+name: synonyms
+description: Web based synonyms finder
+type: application
+version: 0.1.0

@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    solution: synonyms
+    app: webserver
+  name: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      solution: synonyms
+      app: webserver
+  template:
+    metadata:
+      labels:
+        solution: synonyms
+        app: webserver
+    spec:
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.azure.com/role
+                operator: In
+                values:
+                - agent
+      containers:
+      - name: webserver
+        image: erikja/synonyms-server:0.1.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVER_PORT
+          value: {{ .Values.webserver.port | quote }}
+        - name: SERVER_USER
+          value: {{ .Values.webserver.user }}
+        - name: SERVER_PASSWORD_FILE
+          value: /run/secrets/server_password
+        - name: MYSQL_TCP_PORT
+          value: {{ .Values.database.port | quote }}
+        - name: MYSQL_USER
+          value: {{ .Values.database.user }}
+        - name: MYSQL_PASSWORD_FILE
+          value: /run/secrets/db_password
+        - name: MYSQL_HOST_NAME
+          value: database 
+        - name: MYSQL_DATABASE
+          value: {{ .Values.database.database }}
+        ports:
+        - name: https-webserver
+          containerPort: 443
+        volumeMounts:
+        - name: webserver-password
+          mountPath: /run/secrets/server_password
+          subPath: server_password
+        - name: database-password
+          mountPath: /run/secrets/db_password
+          subPath: db_password
+      volumes:
+      - name: webserver-password
+        secret:
+          secretName: webserver
+      - name: database-password
+        secret:
+          secretName: database
